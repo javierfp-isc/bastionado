@@ -1,37 +1,87 @@
-## Welcome to GitHub Pages
+## Bastionado de Redes y Sistemas
 
-You can use the [editor on GitHub](https://github.com/javierfp-isc/bastionado/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+Documentación para trabajo con los repositorios del módulo de Bastionado de Redes y Sistemas del Curso de Especialización en Ciberseguridad del IES San Clemente.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Trabajando con escenarios
 
-### Markdown
+Dentro de cada repositorio habrá un conjunto de escenarios, cada uno en un subdirectorio dentro del repositorio, con los elementos necesarios para desplegar escenarios de actividades prácticas.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Cada escenario consta de un stack **docker-compose**, pudiendo también disponer de un despliegue **vagrant para máquinas Virtualbox**.
 
-```markdown
-Syntax highlighted code block
+Los elementos principales son services **docker-compose**, los cuales se construyen a partir del archivo **compose/docker-compose.yml**.
 
-# Header 1
-## Header 2
-### Header 3
+A efectos de interacción con los escenarios (creación, listado de elementos, parada, arranque, etc.) se dispone de un **Makefile** dentro de cada escenario el cual, mediante targets, permite la gestión de cada uno de ellos mediante el **comando make**.
 
-- Bulleted
-- List
+### Lanzar escenario
 
-1. Numbered
-2. List
+Desde el directorio del escenario ejecutamos:
 
-**Bold** and _Italic_ and `Code` text
+`make`
 
-[Link](url) and ![Image](src)
-```
+El comando anterior crear todos los elementos del escenario: imágenes docker, networks, containers y volúmenes
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+### Listar los elementos de un escenario
 
-### Jekyll Themes
+Ejectuamos para ello:
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/javierfp-isc/bastionado/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+`make ls`
 
-### Support or Contact
+### Arrancar y parar escenario
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Con el comando:
+
+`make start`
+
+Arrancamos los containers del escenario.
+
+Si ejecutamos:
+
+`make stop`
+
+detenemos los containers del escenario
+
+Con:
+
+`make restart`
+
+reiniciamos el escenario (stop->start)
+
+### Acceder por terminal a un service del escenario
+
+Para acceder por terminal de línea de comandos a un service (container) usando su nombre de service, ejecutamos:
+
+`make sh service=nombre`
+
+donde **nombre** es el nombre del service correspondiente
+
+### Ver información de un service del escenario
+
+Ejecutamos:
+
+`make info service=nombre`
+
+### Eliminar containers de un escenario
+
+Para eliminar los containers de un escenario, solamente éstos, sin eliminar networks, ni volúmenes ni imágenes, ejecutamos:
+
+`make down`
+
+### Eliminar containers e imágenes de un escenario
+
+Si además queremos eliminar también las imágenes, ejecutamos:
+
+`make delete`
+
+### Deshabilitar Firewall
+
+En algunos escenarios, se disponen también de dos targets que permiten deshabilitar y habilitar, mediante iptables, netfilter. Realmente lo que hacen es actuar sobre las POLICY de las cadenas INPUT, OUTPUT y FORWARD, estableciendo ésta ACCEPT. El efecto resultante es que el tráfico no se bloquea. Esto puede resultar útil para hacer pruebas sin que el firewall "moleste".
+
+Los targets son:
+
+`make fwdown`
+
+Establece las políticas a ACCEPT para todos los elementos del escenario.
+
+`make fwup`
+
+Reestablece las políticas a DROP para todos los elementos del escenario.
